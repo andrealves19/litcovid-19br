@@ -1,6 +1,7 @@
 
 
 library(shiny)
+library(ggplot2)
 
 # Define UI for application that draws a histogram
 ui <- htmlTemplate(
@@ -19,7 +20,9 @@ server <- function(input, output) {
         bins <- seq(min(x), max(x))
 
         # draw the histogram with the specified number of bins
-        hist(x, breaks = bins, col = 'darkgray', border = 'white')
+        ggplot(faithful, aes(x = eruptions, y = waiting)) + 
+            geom_point() +
+            theme_bw()
     })
 }
 
