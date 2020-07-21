@@ -1,6 +1,7 @@
 # Packages 
 
 require(shiny)
+require(dplyr)
 require(ggplot2)
 require(highcharter)
 require(forecast)
