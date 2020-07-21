@@ -15,8 +15,8 @@ pubmequery_request = pmApiRequest(query,limit = 5000)  # reduzir para ser mais r
 
 pubme_df = pmApi2df(pubmeddata,format = "bibliometrix")  # tentar salvar como raw para tentar ler depois direto no biblio
 
-write_csv(x = pubme_df,path = "pubmed_teste2_raw.csv")
-getwd()
+#write_csv(x = pubme_df,path = "pubmed_teste2_raw.csv")
+#getwd()
 
 
 #fwrite(x = pubme_df , file = "pubmed_teste2_raw.txt",sep = ",",quote = "auto")
