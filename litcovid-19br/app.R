@@ -8,11 +8,12 @@ require(forecast)
 require(htmlwidgets)
 require(shinyjs)
 require(shinyWidgets)
+setwd("/home/juracybertoldo/Shiny_projetos/litcovid-19br/litcovid-19br/")
 
 # Define UI for application 
 ui <- htmlTemplate(
     filename = "www/index.html",
-    plotOutput = highchartOutput(outputId = "hcontainer"),
+    plotOutput = leafletOutput(outputId = "mapa",width = "100%",height = "600"),
     mapOutput = highchartOutput(outputId = "mapcontainer")
 
 )
@@ -43,8 +44,30 @@ server <- function(input, output) {
               dataLabels = list(enabled = TRUE, format = '{point.name}'),
               borderColor = "#FAFAFA", borderWidth = 0.1,
               tooltip = list(valueDecimals = 2, valuePrefix = "$", valueSuffix = " USD")) 
+    })
+    
+    output$mapa <- renderLeaflet({
+        quintiles =  quantile(sPDF$qtd_artigos, probs = (0:5)/5,na.rm = T)
+        pal_ <- colorBin("Blues", domain = sPDF$qtd_artigos, bins = quintiles)
+        labels <- sprintf(
+            "<strong>%s</strong><br/>%g </sup>",
+            sPDF$Country,sPDF$qtd_artigos ) %>% lapply(htmltools::HTML)
         
-        
+        m <- leaflet(sPDF, options = leafletOptions(minZoom = 2,zoomSnap = 0.3,zoomDelta = 0.3) ) %>%  addTiles() %>% addPolygons(
+            fillColor = ~pal_(qtd_artigos),
+            weight = 0.5,
+            opacity = 1,
+            color = "white",
+            dashArray = "3",
+            fillOpacity = 0.7,
+            label = labels,
+            layerId = ~Country,
+            highlightOptions = highlightOptions(color = "black", weight = 2,
+                                                bringToFront = TRUE)) %>%
+            addResetMapButton() %>% addLegend(pal = pal_, values = ~qtd_artigos, opacity = 0.7, title = NULL,
+                                              position = "bottomright")
+
+         
     })
 }
 
