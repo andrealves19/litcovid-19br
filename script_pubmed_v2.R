@@ -25,7 +25,7 @@ syndrome coronavirus 2”[Title/Abstract] OR “SARS-CoV-2”[Title/Abstract] OR
 # 
 # fwrite(x = pubme_df,file = "testepubmed_v3_raw.csv",sep = "|")
 
-teste = convert2df(file = "pubmed-COVID-19Ti-set.nbib",dbsource = "pubmed",format = "csv")
+teste = convert2df(file = "C:/Users/Visitante/Documents/GitHub/litcovid-19br/pubmed-COVID-19Ti-set.nbib",dbsource = "pubmed",format = "csv")
 
 results <- biblioAnalysis(teste, sep = ";")
 

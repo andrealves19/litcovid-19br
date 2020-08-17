@@ -8,12 +8,22 @@ require(forecast)
 require(htmlwidgets)
 require(shinyjs)
 require(shinyWidgets)
+require(lubridate)
+require(stringr)
+require(rworldmap)
+require(pubmedR)
+
+
+#setwd(dir = "C:/Users/Visitante/Documents/GitHub/litcovid-19br/litcovid-19br/")
+
+teste = convert2df(file = "C:/Users/Visitante/Documents/GitHub/litcovid-19br/pubmed-COVID-19Ti-set.nbib",dbsource = "pubmed",format = "csv")
 
 # Define UI for application 
 ui <- htmlTemplate(
     filename = "www/index.html",
     plotOutput = highchartOutput(outputId = "hcontainer"),
-    mapOutput = highchartOutput(outputId = "mapcontainer")
+    mapOutput = plotOutput(outputId = "mapcontainer", 
+                           width = 1200, height = 700)
 
 )
 
@@ -24,26 +34,45 @@ server <- function(input, output) {
     
     output$hcontainer <- renderHighchart({
 
-        airforecast <- forecast(auto.arima(AirPassengers), level = 95)
-        
-        hchart(airforecast)
+        teste %>% 
+            mutate(DEP = ymd(DEP)) %>% 
+            filter(DEP >= '2020-01-01',
+                   LA %in% c('ENG', 'POR', 'FRE', 'SPA', 'GER', 'ITA', 'RUS', 'CHI', 'DUT')) %>% 
+            group_by(DEP, LA) %>% 
+            summarise(n = n()) %>% 
+            hchart('line', hcaes(x = DEP, y = n, group = LA)) %>% 
+            hc_add_theme(hc_theme_google()) %>% 
+            hc_title(text = "Number of Publications by Language") %>% 
+            hc_yAxis(title = list(text = "Count")) %>% 
+            hc_xAxis(title = list(text = "Publication Date")) %>% 
+            hc_subtitle(text = "Primary Language of Publication")%>% 
+            hc_legend(align = "center")
     })
     
     
-    output$mapcontainer <- renderHighchart({
+    output$mapcontainer <- renderPlot({
         
-        mapdata <- get_data_from_map(download_map_data("countries/us/us-all"))
+        matched <- teste %>% 
+            filter(DEP >= '2020-01-01',
+                   !is.na(PL)) %>% 
+            group_by(PL) %>% 
+            summarise(n = n()) %>% 
+            joinCountryData2Map(joinCode = "NAME", nameJoinColumn = "PL")
         
-        data_fake <- mapdata %>% 
-            select(code = `hc-a2`) %>% 
-            mutate(value = 1e5 * abs(rt(nrow(.), df = 10)))
+        mapParams <- mapCountryData(matched,
+                                    nameColumnToPlot = "n",
+                                    mapTitle = "Number of Publications by Country", addLegend = FALSE,
+                                    mapRegion = 'world',
+                                    #missingCountryCol = "grey",
+                                    numCats = 9)
         
-        hcmap("countries/us/us-all", data = data_fake, value = "value",
-              joinBy = c("hc-a2", "code"), name = "Fake data",
-              dataLabels = list(enabled = TRUE, format = '{point.name}'),
-              borderColor = "#FAFAFA", borderWidth = 0.1,
-              tooltip = list(valueDecimals = 2, valuePrefix = "$", valueSuffix = " USD")) 
+        #country_coord <-data.frame(coordinates(matched),stringsAsFactors=F)
+        #country <- na.omit(matched@data$PL)
+        #country <- str_to_title(country)
+        #country[35] <- "United States of America"
+        #country_coord <-  country_coord[country,]
         
+        #text(x=country_coord$X1,y=country_coord$X2,labels=row.names(country_coord), cex = 0.7)
         
     })
 }
