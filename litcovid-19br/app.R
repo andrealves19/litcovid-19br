@@ -12,6 +12,7 @@ require(lubridate)
 require(stringr)
 require(rworldmap)
 require(pubmedR)
+require(bibliometrix)
 
 
 #setwd(dir = "C:/Users/Visitante/Documents/GitHub/litcovid-19br/litcovid-19br/")
@@ -38,13 +39,15 @@ server <- function(input, output) {
             mutate(DEP = ymd(DEP)) %>% 
             filter(DEP >= '2020-01-01',
                    LA %in% c('ENG', 'POR', 'FRE', 'SPA', 'GER', 'ITA', 'RUS', 'CHI', 'DUT')) %>% 
-            group_by(DEP, LA) %>% 
+            mutate(year = year(DEP),
+                   week = isoweek(DEP)) %>% 
+            group_by(week, LA) %>% 
             summarise(n = n()) %>% 
-            hchart('line', hcaes(x = DEP, y = n, group = LA)) %>% 
+            hchart('line', hcaes(x = week, y = n, group = LA)) %>% 
             hc_add_theme(hc_theme_google()) %>% 
             hc_title(text = "Number of Publications by Language") %>% 
             hc_yAxis(title = list(text = "Count")) %>% 
-            hc_xAxis(title = list(text = "Publication Date")) %>% 
+            hc_xAxis(title = list(text = "Publication Week")) %>% 
             hc_subtitle(text = "Primary Language of Publication")%>% 
             hc_legend(align = "center")
     })
