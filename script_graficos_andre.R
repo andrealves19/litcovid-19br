@@ -62,7 +62,7 @@ mapParams <- mapCountryData(matched,
 #labelCountries()
 
 country_coord <-data.frame(coordinates(matched),stringsAsFactors=F)
-country <- na.omit(matched@data$PL)
+country <- na.omit(matched@data$country1)
 country <- str_to_title(country)
 country[35] <- "United States of America"
 country_coord <-  country_coord[country,]
