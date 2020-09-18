@@ -6095,7 +6095,7 @@ a.close.disabled {
 }
 
 .bg-primary {
-  background-color: #f4623a !important;
+  background-color: #f8f9fa !important;
 }
 
 a.bg-primary:hover, a.bg-primary:focus,
@@ -10164,3 +10164,15 @@ header.masthead h1 {
 .text-white-75 {
   color: rgba(255, 255, 255, 0.75);
 }
+
+
+.legend {
+    padding: 6px 10px 6px 6px;
+    color: #000033;
+    background: #fff;
+    border-left:1px solid #666666;
+    border-right:2px solid #666666;
+    border-top:2px solid #666666;
+    border-bottom:2px solid #666666
+}
+

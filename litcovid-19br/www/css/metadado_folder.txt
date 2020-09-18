@@ -1,0 +1,8 @@
+downlaod dados para projeto credenciamento ms 
+
+download dos dados por setor censitario do site 
+
+
+https://www.ibge.gov.br/estatisticas/downloads-estatisticas.html
+
+folder no site censo -> censo 2020 -> resultados do universo -> agregados por setores censitarios
