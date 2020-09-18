@@ -6,10 +6,11 @@ source('global.R', local = T)
 # Define UI for application 
 ui <- htmlTemplate(
     filename = "www/index.html",
-    plotOutput = leafletOutput(outputId = "mapa",width = "100%",height = "600"),
+    plotOutput = highchartOutput(outputId = "hcontainer"),
+    mapOutput = highchartOutput(outputId = "mapcontainer"),
     tableOutput = dataTableOutput(outputId = "table_sources",width = "100%",height = "600"),
     tableOutput_v2 =  uiOutput("table_bar"),
-    mapOutput = highchartOutput(outputId = "mapcontainer"),
+    #mapOutput = highchartOutput(outputId = "mapcontainer"),
     worldcloud_output = wordcloud2Output(outputId =  "wordcloud2")
     
 )
@@ -24,46 +25,61 @@ server <- function(input, output) {
         wordcloud2::wordcloud2(freq_words_dt, color = "random-dark", backgroundColor="rgba(255, 255, 255, 0)")
     })
     
+    dfInput <- reactive({
+        x <- df1 %>% mutate(variable = !! rlang::sym(input$select))
+    })
+    
+    mapInput <- reactive({
+        y <- publications %>% mutate(variable = !! rlang::sym(input$mapSelect))
+    })
+    
+    output$hcontainer <- renderHighchart({
+        
+        df1 <- dfInput()
+        
+        df1 %>% 
+            #filter(country1 %in% target) %>% 
+            group_by(variable, country1) %>% 
+            summarise(n = n()) %>% 
+            hchart('line', hcaes(x = variable, y = n, group = country1)) %>% 
+            hc_add_theme(hc_theme_google()) %>% 
+            hc_title(text = "Number of Publications by Primary Country") %>% 
+            hc_yAxis(title = list(text = "Count")) %>% 
+            hc_xAxis(title = list(text = "Publication Month")) %>% 
+            hc_subtitle(text = "Primary Country of Publication") %>% 
+            hc_legend(align = "center")
+        
+    })
+    
     
     output$mapcontainer <- renderHighchart({
         
-        mapdata <- get_data_from_map(download_map_data("countries/us/us-all"))
+        dfmap <- mapInput()
         
-        data_fake <- mapdata %>% 
-            select(code = `hc-a2`) %>% 
-            mutate(value = 1e5 * abs(rt(nrow(.), df = 10)))
+       
+        dfmap$variable[dfmap$variable=="United States"] <- "United States of America"
+        mapdata$name[mapdata$name=="United States of America"] <- "United States Of America"
         
-        hcmap("countries/us/us-all", data = data_fake, value = "value",
-              joinBy = c("hc-a2", "code"), name = "Fake data",
-              dataLabels = list(enabled = TRUE, format = '{point.name}'),
-              borderColor = "#FAFAFA", borderWidth = 0.1,
-              tooltip = list(valueDecimals = 2, valuePrefix = "$", valueSuffix = " USD")) 
+        dfmap %>% 
+            filter(!is.na(country1)) %>% 
+            group_by(variable) %>% 
+            summarise(n = n()) %>% 
+            mutate(country = tools::toTitleCase(variable)) %>% 
+            arrange(desc(n)) %>% 
+            hcmap(data = .,
+                  map = "custom/world",
+                  showInLegend = FALSE,
+                  download_map_data = TRUE,
+                  value = "n",
+                  joinBy = c("name", "country"),
+                  dataLabels = list(enabled = TRUE)) %>% 
+            hc_title(text = "Publications around the World") # %>% 
+        #hc_colorAxis(dataClasses = color_classes(c(seq(100, 115, by = 5)))) %>% 
+        #hc_legend(layout = "horizontal", align = "center", valueDecimals = 0)
+        
+        
     })
-    
-    output$mapa <- renderLeaflet({
-        quintiles =  quantile(sPDF$qtd_artigos, probs = (0:5)/5,na.rm = T)
-        bins <- c(0, 10, 100, 500, 1000, 2000, 4000, Inf)
-        pal_ <- colorBin("Blues", domain = sPDF$qtd_artigos, bins = bins)
-        labels <- sprintf(
-            "<strong>%s</strong><br/>%g </sup>",
-            sPDF$Country,sPDF$qtd_artigos ) %>% lapply(htmltools::HTML)
-        
-        m <- leaflet(sPDF, options = leafletOptions(minZoom = 2,zoomSnap = 0.3,zoomDelta = 0.3) ) %>%  addTiles() %>% addPolygons(
-            fillColor = ~pal_(qtd_artigos),
-            weight = 0.5,
-            opacity = 1,
-            color = "white",
-            dashArray = "3",
-            fillOpacity = 0.7,
-            label = labels,
-            layerId = ~Country,
-            highlightOptions = highlightOptions(color = "black", weight = 2,
-                                                bringToFront = TRUE)) %>%
-            addResetMapButton() %>% addLegend(pal = pal_, values = ~qtd_artigos, opacity = 0.7, title = NULL,
-                                              position = "bottomright")
 
-         
-    })
     
 
     
