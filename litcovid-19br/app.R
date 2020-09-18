@@ -38,7 +38,7 @@ df1 <- publications %>%
 
 
 # Define UI for application 
-ui <- htmlTemplate(
+ui <- htmlTemplate(document_ = TRUE,
     filename = "www/index.html",
     plotOutput = highchartOutput(outputId = "hcontainer"),
     mapOutput = highchartOutput(outputId = "mapcontainer")
