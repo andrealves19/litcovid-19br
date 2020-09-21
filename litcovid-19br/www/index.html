@@ -57,10 +57,32 @@
     <section class="page-section " id="about">
         <div class="container">
             <div class="row justify-content-center">
-                <div class="col-lg-12 text-center">
-                    <h2 class="text-orange mt-0">Veja o número de artigos por país!</h2>
+                <div class="col-lg-8 text-center">
+                    <h2 class="text-orange mt-0">Veja publicações ao longo do tempo!</h2>
                     <hr class="divider light my-4" /> 
+                    <select id='select'>
+                        <option value='date'>Day</option>
+                        <option value='week'>Week</option>
+                        <option value='month'>Month</option>
+                      </select>
                     {{plotOutput}}
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Services-->
+    <section class="page-section" id="services">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class = "col-lg-8 text-center">
+            <h2 class="text-center mt-0">Veja publicações por local!</h2>
+            <hr class="divider light my-4" />
+            <select id='mapSelect'>
+                <option value='country1'>Primary</option>
+                <option value='country2'>Secondary</option>
+                <option value='country3'>Tertiary</option>
+            </select>
+                {{mapOutput}}
                 </div>
             </div>
         </div>
