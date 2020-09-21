@@ -1,5 +1,5 @@
 
-setwd("/home/juracybertoldo/Shiny_projetos/litcovid-19br/litcovid-19br/")
+setwd("/srv/shiny-server/litcovid-19br/litcovid-19br")
 source('global.R', local = T) 
 
 
