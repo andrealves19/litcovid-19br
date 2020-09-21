@@ -109,6 +109,42 @@
         </div>
     </section>
 
+    <section class="page-section " id="about2">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-12 text-center">
+                    <h2 class="text-orange mt-0">Participação de Mulheres em Publicações</h2>
+                    <hr class="divider light my-4" /> 
+                    <select id='n_input'>
+                        <option selected disabled>Number of Publications</option>
+                        <option value='1'>All Countries </option>
+                        <option value='50'>Countries with More than 50 publications</option>
+                        <option value='100'>Countries with More than 100 publications </option>
+                    </select>
+                    <select id='slice_input'>
+                        <option selected disabled>Number of Countries</option>
+                        <option value='100'>All Countries </option>
+                        <option value='10'>Top 10 Countries</option>
+                        <option value='20'>Top 20 Countries </option>
+                    </select>
+                    {{bar_output}}
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="page-section " id="about1">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-12 text-center">
+                    <h2 class="text-orange mt-0"></h2>
+                    <hr class="divider light my-4" /> 
+                    {{gender_output}}
+                </div>
+            </div>
+        </div>
+    </section>
+
 
     <!-- Contact-->
     <section class="page-section" id="contact">

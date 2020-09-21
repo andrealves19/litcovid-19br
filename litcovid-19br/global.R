@@ -21,6 +21,8 @@ library(tidyverse)
 library(lubridate)
 library(rworldmap)
 library(mapdata)
+require(stringr)
+require(stringi)
 
 print(getwd())
 load("pubmed_data_R_ambiente.RData")
@@ -52,7 +54,7 @@ publications <- publications %>%
 publications <- publications %>% 
     mutate(date = ymd(`Publication Date`),
            week = epiweek(date),
-           month = month(date, label = TRUE))
+           month = lubridate::month(date, label = TRUE))
 
 target <- publications %>% 
     filter(!is.na(country1)) %>% 
@@ -66,3 +68,23 @@ target <- as.vector(target$country1)
 
 df1 <- publications %>% 
     filter(country1 %in% target)
+
+# Nomes 
+
+name_gender <- read_csv("name_gender.csv")
+
+name_gender <- name_gender %>% 
+    mutate(name = stringr::str_to_lower(name))
+
+publications$country1[publications$country1=="United States"] <- "United States of America"
+
+name_base <- publications %>% 
+    separate(col = Authors, into = c("author1", "author2"), sep = ";", remove = FALSE) %>% 
+    separate(col = author1, into = c("lastname", "name"), remove = FALSE) %>% 
+    separate(col = author2, into = c("lastname2", "name2")) 
+
+name_base <- name_base %>% 
+    mutate(name = stringr::str_to_lower(name),
+           name = stringi::stri_trans_general(name, id = "Latin-ASCII")) %>% 
+    left_join(name_gender, by = "name") %>% 
+    select(Authors, author1, lastname, name, country1, country2, gender, probability)
