@@ -103,12 +103,12 @@ server <- function(input, output) {
     
 
     
-    table_pat_all <- reactive(
-        DT::datatable(dados_source_artigos, options = list(pageLength = 25))
-    )
-    output$table_pat_all <- DT::renderDataTable({
-        table_pat_all()
-    })
+    # table_pat_all <- reactive(
+    #     DT::datatable(dados_source_artigos, options = list(pageLength = 25))
+    # )
+    # output$table_pat_all <- DT::renderDataTable({
+    #     table_pat_all()
+    # })
     
     output$table_bar <- renderUI({
         div(
